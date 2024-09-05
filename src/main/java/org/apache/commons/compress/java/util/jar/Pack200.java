@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.Objects;
 import java.util.SortedMap;
 import java.util.jar.JarFile;
 import java.util.jar.JarInputStream;
@@ -277,7 +278,11 @@ public abstract class Pack200 {
             final String className = System.getProperty(systemProperty, defaultClassName);
             try {
                 // TODO Not sure if this will cause problems loading the class
-                return Pack200.class.getClassLoader().loadClass(className).newInstance();
+                ClassLoader classLoader = Pack200.class.getClassLoader();
+                if (classLoader == null) {
+                    classLoader = Objects.requireNonNull(ClassLoader.getSystemClassLoader(), "ClassLoader.getSystemClassLoader()");
+                }
+                return classLoader.loadClass(className).getConstructor().newInstance();
             } catch (final Exception e) {
                 throw new Error(Messages.getString("archive.3E", className), e); //$NON-NLS-1$
             }

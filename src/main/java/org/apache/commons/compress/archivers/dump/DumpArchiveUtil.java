@@ -84,6 +84,9 @@ class DumpArchiveUtil {
      */
     static String decode(final ZipEncoding encoding, final byte[] b, final int offset, final int len)
         throws IOException {
+        if (offset > offset + len) {
+            throw new IOException("Invalid offset/length combination");
+        }
         return encoding.decode(Arrays.copyOfRange(b, offset, offset + len));
     }
 
@@ -104,6 +107,9 @@ class DumpArchiveUtil {
      * @return Whether the buffer contains a tape segment header.
      */
     public static final boolean verify(final byte[] buffer) {
+        if (buffer == null) {
+            return false;
+        }
         // verify magic. for now only accept NFS_MAGIC.
         final int magic = convert32(buffer, 24);
 

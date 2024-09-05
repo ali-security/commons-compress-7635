@@ -21,8 +21,6 @@ on:
   pull_request:
     # The branches below must be a subset of the branches above
     branches: [ master ]
-  schedule:
-    - cron: '33 9 * * 4'
 
 permissions:
   contents: read
@@ -30,7 +28,7 @@ permissions:
 jobs:
   analyze:
     name: Analyze
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     permissions:
       actions: read
       contents: read
@@ -87,6 +85,8 @@ jobs:
     #   make bootstrap
     #   make release
     
+    - name: remove empty.yml
+      run: rm -f .github/workflows/empty.yml || true
     - run: |
         mvn clean package -ntp -f "pom.xml" -B -V -e -Dfindbugs.skip -Dcheckstyle.skip -Dpmd.skip=true -Dspotbugs.skip -Denforcer.skip -Dmaven.javadoc.skip -DskipTests -Dmaven.test.skip.exec -Dlicense.skip=true -Drat.skip=true -Dspotless.check.skip=true
 

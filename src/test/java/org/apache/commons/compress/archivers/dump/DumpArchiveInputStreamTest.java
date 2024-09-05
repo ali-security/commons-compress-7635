@@ -58,6 +58,22 @@ public class DumpArchiveInputStreamTest extends AbstractTestCase {
     }
 
     @Test
+    public void testDirectoryNullBytes() throws Exception {
+        try (InputStream is = newInputStream("org/apache/commons/compress/dump/directory_null_bytes.dump");
+             DumpArchiveInputStream archive = new DumpArchiveInputStream(is)) {
+            assertThrows(InvalidFormatException.class, archive::getNextEntry);
+        }
+    }
+
+    @Test
+    public void testInvalidCompressType() throws Exception {
+        try (InputStream is = newInputStream("org/apache/commons/compress/dump/invalid_compression_type.dump")) {
+            final ArchiveException ex = assertThrows(ArchiveException.class, () -> new DumpArchiveInputStream(is).close());
+            assertInstanceOf(UnsupportedCompressionAlgorithmException.class, ex.getCause());
+        }
+    }
+
+    @Test
     public void testConsumesArchiveCompletely() throws Exception {
         try (final InputStream is = DumpArchiveInputStreamTest.class.getResourceAsStream("/archive_with_trailer.dump");
                 DumpArchiveInputStream dump = new DumpArchiveInputStream(is)) {
